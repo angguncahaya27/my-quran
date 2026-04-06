@@ -11,7 +11,7 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   // ✅ TAMBAHAN AUDIO STATE
-  const [currentAudio, setCurrentAudio] = useState(null);
+  
 
   useEffect(() => {
     fetch("https://equran.id/api/v2/surat")
