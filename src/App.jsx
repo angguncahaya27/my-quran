@@ -8,6 +8,9 @@ function App() {
   const [search, setSearch] = useState("");
   const [showScroll, setShowScroll] = useState(false);
 
+  // ✅ TAMBAHAN AUDIO STATE
+  const [currentAudio, setCurrentAudio] = useState(null);
+
   useEffect(() => {
     fetch("https://equran.id/api/v2/surat")
       .then((res) => res.json())
@@ -22,6 +25,24 @@ function App() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // ✅ TAMBAHAN FUNCTION AUDIO
+  const playAudio = (url) => {
+    if (!url) return;
+
+    if (currentAudio) {
+      currentAudio.pause();
+    }
+
+    const audio = new Audio(url);
+    audio.play();
+
+    setCurrentAudio(audio);
+
+    audio.onended = () => {
+      setCurrentAudio(null);
+    };
+  };
 
   const handleClick = (nomor) => {
     fetch(`https://equran.id/api/v2/surat/${nomor}`)
@@ -87,21 +108,21 @@ function App() {
         <div className="detail">
 
           {/* STICKY HEADER */}
-       <div className="stickyHeader">
-          <div className="stickyContent">
-            <button
-              className="backBtn"
-              onClick={() => setSelectedSurah(null)}
-            >
-             ← Kembali ke daftar
-            </button>
+          <div className="stickyHeader">
+            <div className="stickyContent">
+              <button
+                className="backBtn"
+                onClick={() => setSelectedSurah(null)}
+              >
+                ← Kembali ke daftar
+              </button>
 
-          <div className="stickySurah">
-            <h3>{selectedSurah.namaLatin}</h3>
-            <span className="arabMini">{selectedSurah.nama}</span>
+              <div className="stickySurah">
+                <h3>{selectedSurah.namaLatin}</h3>
+                <span className="arabMini">{selectedSurah.nama}</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
           {/* INFO SURAH */}
           <div className="detailHeader">
@@ -109,6 +130,14 @@ function App() {
             <h2 className="arabTitle">{selectedSurah.nama}</h2>
             <p><strong>Arti:</strong> {selectedSurah.arti}</p>
             <p><strong>Jumlah Ayat:</strong> {selectedSurah.jumlahAyat}</p>
+
+            {/* ✅ AUDIO FULL SURAH */}
+            <button
+              className="audioBtn"
+              onClick={() => playAudio(selectedSurah.audioFull["05"])}
+            >
+              ▶️ Putar Full Surah
+            </button>
 
             <p
               className="deskripsi"
@@ -121,6 +150,14 @@ function App() {
             {ayat.map((a) => (
               <div key={a.nomorAyat} className="ayatCard">
                 <div className="ayatNumber">{a.nomorAyat}</div>
+
+                {/*  AUDIO PER AYAT */}
+                <button
+                  className="ayatAudioBtn"
+                  onClick={() => playAudio(a.audio["05"])}
+                >
+                  🔊
+                </button>
 
                 <p className="arabText">{a.teksArab}</p>
 

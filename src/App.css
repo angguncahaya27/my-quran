@@ -242,3 +242,36 @@ body {
   background: #1b5e20;
   transform: scale(1.1);
 }
+
+/* ================= audio ================= */
+.audioBtn {
+  margin-top: 15px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 20px;
+  background: #2e7d32;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.audioBtn:hover {
+  background: #1b5e20;
+}
+
+.ayatAudioBtn {
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  background: #66bb6a;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  color: white;
+}
+
+.ayatAudioBtn:hover {
+  background: #2e7d32;
+}
