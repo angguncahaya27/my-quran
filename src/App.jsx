@@ -7,6 +7,8 @@ function App() {
   const [ayat, setAyat] = useState([]);
   const [search, setSearch] = useState("");
   const [showScroll, setShowScroll] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // ✅ TAMBAHAN AUDIO STATE
   const [currentAudio, setCurrentAudio] = useState(null);
@@ -28,21 +30,35 @@ function App() {
 
   // ✅ TAMBAHAN FUNCTION AUDIO
   const playAudio = (url) => {
-    if (!url) return;
+  if (!url) return;
 
-    if (currentAudio) {
+  // kalau audio sama → toggle pause/play
+  if (currentAudio && currentAudio.src === url) {
+    if (isPlaying) {
       currentAudio.pause();
+      setIsPlaying(false);
+    } else {
+      currentAudio.play();
+      setIsPlaying(true);
     }
+    return;
+  }
 
-    const audio = new Audio(url);
-    audio.play();
+  // stop audio sebelumnya
+  if (currentAudio) {
+    currentAudio.pause();
+  }
 
-    setCurrentAudio(audio);
+  const audio = new Audio(url);
+  audio.play();
 
-    audio.onended = () => {
-      setCurrentAudio(null);
-    };
+  setCurrentAudio(audio);
+  setIsPlaying(true);
+
+  audio.onended = () => {
+    setIsPlaying(false);
   };
+};
 
   const handleClick = (nomor) => {
     fetch(`https://equran.id/api/v2/surat/${nomor}`)
@@ -136,8 +152,10 @@ function App() {
               className="audioBtn"
               onClick={() => playAudio(selectedSurah.audioFull["05"])}
             >
-              ▶️ Putar Full Surah
-            </button>
+            {currentAudio?.src === selectedSurah.audioFull["05"] && isPlaying
+                   ? "⏸ Pause Surah"
+                   : "▶️ Putar Surah"}
+              </button>
 
             <p
               className="deskripsi"
@@ -153,10 +171,10 @@ function App() {
 
                 {/*  AUDIO PER AYAT */}
                 <button
-                  className="ayatAudioBtn"
-                  onClick={() => playAudio(a.audio["05"])}
+                   className="ayatAudioBtn"
+                   onClick={() => playAudio(a.audio["05"])}
                 >
-                  🔊
+                  {currentAudio?.src === a.audio["05"] && isPlaying ? "⏸" : "🔊"}
                 </button>
 
                 <p className="arabText">{a.teksArab}</p>
