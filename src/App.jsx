@@ -9,9 +9,8 @@ function App() {
   const [showScroll, setShowScroll] = useState(false);
   const [currentAudio, setCurrentAudio] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-
-  // ✅ TAMBAHAN AUDIO STATE
-  
+  const [tafsirData, setTafsirData] = useState([]);
+  const [openTafsir, setOpenTafsir] = useState(null);
 
   useEffect(() => {
     fetch("https://equran.id/api/v2/surat")
@@ -28,45 +27,51 @@ function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ TAMBAHAN FUNCTION AUDIO
+  // AUDIO FUNCTION (PLAY / PAUSE)
   const playAudio = (url) => {
-  if (!url) return;
+    if (!url) return;
 
-  // kalau audio sama → toggle pause/play
-  if (currentAudio && currentAudio.src === url) {
-    if (isPlaying) {
-      currentAudio.pause();
-      setIsPlaying(false);
-    } else {
-      currentAudio.play();
-      setIsPlaying(true);
+    if (currentAudio && currentAudio.src === url) {
+      if (isPlaying) {
+        currentAudio.pause();
+        setIsPlaying(false);
+      } else {
+        currentAudio.play();
+        setIsPlaying(true);
+      }
+      return;
     }
-    return;
-  }
 
-  // stop audio sebelumnya
-  if (currentAudio) {
-    currentAudio.pause();
-  }
+    if (currentAudio) {
+      currentAudio.pause();
+    }
 
-  const audio = new Audio(url);
-  audio.play();
+    const audio = new Audio(url);
+    audio.play();
 
-  setCurrentAudio(audio);
-  setIsPlaying(true);
+    setCurrentAudio(audio);
+    setIsPlaying(true);
 
-  audio.onended = () => {
-    setIsPlaying(false);
+    audio.onended = () => {
+      setIsPlaying(false);
+    };
   };
-};
 
   const handleClick = (nomor) => {
+    // ambil ayat
     fetch(`https://equran.id/api/v2/surat/${nomor}`)
       .then((res) => res.json())
       .then((data) => {
         setSelectedSurah(data.data);
         setAyat(data.data.ayat);
         window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+    // ambil tafsir
+    fetch(`https://equran.id/api/v2/tafsir/${nomor}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setTafsirData(data.data.tafsir);
       });
   };
 
@@ -119,7 +124,7 @@ function App() {
         </>
       )}
 
-      {/* ================= DETAIL VIEW ================= */}
+      {/* DETAIL VIEW */}
       {selectedSurah && (
         <div className="detail">
 
@@ -147,15 +152,14 @@ function App() {
             <p><strong>Arti:</strong> {selectedSurah.arti}</p>
             <p><strong>Jumlah Ayat:</strong> {selectedSurah.jumlahAyat}</p>
 
-            {/* ✅ AUDIO FULL SURAH */}
             <button
               className="audioBtn"
               onClick={() => playAudio(selectedSurah.audioFull["05"])}
             >
-            {currentAudio?.src === selectedSurah.audioFull["05"] && isPlaying
-                   ? "⏸ Pause Surah"
-                   : "▶️ Putar Surah"}
-              </button>
+              {currentAudio?.src === selectedSurah.audioFull["05"] && isPlaying
+                ? "⏸ Pause Surah"
+                : "▶️ Putar Surah"}
+            </button>
 
             <p
               className="deskripsi"
@@ -169,12 +173,24 @@ function App() {
               <div key={a.nomorAyat} className="ayatCard">
                 <div className="ayatNumber">{a.nomorAyat}</div>
 
-                {/*  AUDIO PER AYAT */}
+                {/* AUDIO AYAT */}
                 <button
-                   className="ayatAudioBtn"
-                   onClick={() => playAudio(a.audio["05"])}
+                  className="ayatAudioBtn"
+                  onClick={() => playAudio(a.audio["05"])}
                 >
                   {currentAudio?.src === a.audio["05"] && isPlaying ? "⏸" : "🔊"}
+                </button>
+
+                {/* BUTTON TAFSIR */}
+                <button
+                  className="tafsirBtn"
+                  onClick={() =>
+                    setOpenTafsir(
+                      openTafsir === a.nomorAyat ? null : a.nomorAyat
+                    )
+                  }
+                >
+                  📖 Tafsir
                 </button>
 
                 <p className="arabText">{a.teksArab}</p>
@@ -184,13 +200,23 @@ function App() {
                 </p>
 
                 <p className="indoText">{a.teksIndonesia}</p>
+
+                {/* TAFSIR */}
+                {openTafsir === a.nomorAyat && (
+                  <div className="tafsirBox">
+                    {
+                      tafsirData.find((t) => t.ayat === a.nomorAyat)?.teks ||
+                      "Tafsir tidak tersedia"
+                    }
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* SCROLL TO TOP BUTTON */}
+      {/* SCROLL BUTTON */}
       {showScroll && (
         <button className="scrollTopBtn" onClick={scrollToTop}>
           ↑
