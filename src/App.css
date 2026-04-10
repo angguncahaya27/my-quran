@@ -269,6 +269,17 @@ body {
   cursor: not-allowed;
 }
 
+.surahDesc {
+  margin-top: 15px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #2e7d32;
+  background: #f1f8f4;
+  padding: 15px;
+  border-radius: 12px;
+  text-align: justify;
+}
+
 /* ================= AYAT ================= */
 
 .ayatList {

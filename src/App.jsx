@@ -219,51 +219,60 @@ function App() {
         </>
       )}
 
-      {/* ================= DETAIL VIEW ================= */}
-      {selectedSurah && (
-        <div className="detail">
+  {/* ================= DETAIL VIEW ================= */}
+{selectedSurah && (
+  <div className="detail">
 
-          {/* STICKY HEADER */}
-          <div className="stickyHeader">
-            <button
-              className="backBtn"
-              onClick={() => setSelectedSurah(null)}
-            >
-              ← Kembali
-            </button>
+    {/* STICKY HEADER */}
+    <div className="stickyHeader">
+      <button
+        className="backBtn"
+        onClick={() => setSelectedSurah(null)}
+      >
+        ← Kembali
+      </button>
 
-            <p className="arabMini">{selectedSurah.nama}</p>
-          </div>
+      <p className="arabMini">{selectedSurah.nama}</p>
+    </div>
 
-          {/* HEADER */}
+    {/* HEADER */}
           <div className="detailHeader">
-            <h2 className="latinTitle">{selectedSurah.namaLatin}</h2>
-            <h2 className="arabTitle">{selectedSurah.nama}</h2>
+             <h2 className="latinTitle">{selectedSurah.namaLatin}</h2>
+             <h2 className="arabTitle">{selectedSurah.nama}</h2>
 
             <p className="subInfo">
-              {selectedSurah.arti} • {selectedSurah.jumlahAyat} ayat
-            </p>
+           {selectedSurah.arti} • {selectedSurah.jumlahAyat} ayat
+         </p>
 
-            {/* 🔥 AUDIO CONTROL */}
-            <div className="audioControls">
-              <button
-                className="audioBtn"
-                onClick={() => playAudio(selectedSurah.audioFull["05"])}
-              >
-                {currentAudio?.src === selectedSurah.audioFull["05"] && isPlaying
-                  ? "⏸ Pause"
-                  : "▶️ Play"}
-              </button>
+  {/* 🔥 AUDIO CONTROL */}
+         <div className="audioControls">
+            <button
+              className="audioBtn"
+              onClick={() => playAudio(selectedSurah.audioFull["05"])}
+              disabled={!selectedSurah.audioFull["05"]}>
+             {currentAudio?.src === selectedSurah.audioFull["05"] && isPlaying
+               ? "⏸ Pause"
+              : "▶️ Play"}
+           </button>
 
-              <button
-                className="stopBtn"
-                onClick={stopAudio}
-                disabled={!currentAudio}
-              >
-                ⏹ Stop
-              </button>
-            </div>
+            <button
+               className="stopBtn"
+               onClick={stopAudio}
+               disabled={!currentAudio}
+               >
+              ⏹ Stop
+            </button>
           </div>
+
+  {/* 🔥 DESKRIPSI SURAT (PINDAH KE SINI) */}
+                 <p
+                className="surahDesc"
+                dangerouslySetInnerHTML={{
+                __html: selectedSurah.deskripsi,
+              }}
+            ></p>
+          </div>
+  
 
           {/* AYAT */}
           <div className="ayatList">
